@@ -287,8 +287,7 @@ jobs:
         run: cargo install cargo-audit
 
       - name: Run security audit
-        working-directory: crates/ruvector-graph
-        run: cargo audit
+        run: cargo audit -p ruvector-graph
 
   coverage:
     name: Code Coverage

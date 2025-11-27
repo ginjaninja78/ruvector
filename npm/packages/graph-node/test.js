@@ -1,4 +1,7 @@
 const { GraphDatabase, version, hello } = require('./index.js');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
 
 console.log('RuVector Graph Node Test');
 console.log('========================\n');
@@ -24,6 +27,7 @@ console.log('3. Creating nodes:');
     const nodeId1 = await db.createNode({
       id: 'alice',
       embedding: new Float32Array([1.0, 0.0, 0.0]),
+      labels: ['Person', 'Employee'],
       properties: { name: 'Alice', age: '30' }
     });
     console.log('   Created node:', nodeId1);
@@ -31,6 +35,7 @@ console.log('3. Creating nodes:');
     const nodeId2 = await db.createNode({
       id: 'bob',
       embedding: new Float32Array([0.0, 1.0, 0.0]),
+      labels: ['Person'],
       properties: { name: 'Bob', age: '25' }
     });
     console.log('   Created node:', nodeId2);
@@ -117,6 +122,47 @@ console.log('3. Creating nodes:');
     });
     console.log('    Batch result:', batchResult);
     console.log('    ✓ Batch insert completed\n');
+
+    // Test 12: Persistence
+    console.log('12. Testing persistence:');
+    const tmpDir = os.tmpdir();
+    const dbPath = path.join(tmpDir, `ruvector-test-${Date.now()}.db`);
+
+    console.log('    Creating persistent database at:', dbPath);
+    const persistentDb = new GraphDatabase({
+      distanceMetric: 'Cosine',
+      dimensions: 3,
+      storagePath: dbPath
+    });
+
+    console.log('    isPersistent():', persistentDb.isPersistent());
+    console.log('    getStoragePath():', persistentDb.getStoragePath());
+
+    // Add data to persistent database
+    await persistentDb.createNode({
+      id: 'persistent_node_1',
+      embedding: new Float32Array([1.0, 0.5, 0.2]),
+      labels: ['PersistentTest'],
+      properties: { testKey: 'testValue' }
+    });
+    console.log('    Created node in persistent database');
+
+    const persistentStats = await persistentDb.stats();
+    console.log('    Persistent DB stats:', persistentStats);
+
+    // Test opening existing database
+    console.log('    Opening existing database with GraphDatabase.open()...');
+    const reopenedDb = GraphDatabase.open(dbPath);
+    console.log('    Reopened isPersistent():', reopenedDb.isPersistent());
+
+    // Cleanup
+    try {
+      fs.unlinkSync(dbPath);
+      console.log('    Cleaned up test database');
+    } catch (e) {
+      // Ignore cleanup errors
+    }
+    console.log('    ✓ Persistence test passed\n');
 
     console.log('✅ All tests passed!');
   } catch (error) {

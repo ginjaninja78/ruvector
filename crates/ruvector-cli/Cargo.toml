@@ -19,6 +19,7 @@ path = "src/mcp_server.rs"
 
 [dependencies]
 ruvector-core = { version = "0.1.2", path = "../ruvector-core" }
+ruvector-graph = { version = "0.1.0", path = "../ruvector-graph", features = ["storage"] }
 
 # CLI
 clap = { workspace = true }

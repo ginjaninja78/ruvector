@@ -32,6 +32,7 @@ if [ -n "$CHANGED_PACKAGES" ]; then
 
         # If running as pre-commit hook, add the lock file
         if [ "${GIT_HOOK}" = "pre-commit" ]; then
+            cd ..
             git add npm/package-lock.json
             echo "✅ Lock file staged for commit"
         else

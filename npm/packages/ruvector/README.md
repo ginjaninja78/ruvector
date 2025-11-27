@@ -377,8 +377,111 @@ npx ruvector info
 # Output:
 #   Platform: linux-x64-gnu
 #   Implementation: native (Rust)
+#   GNN Module: Available
 #   Node.js: v18.17.0
 #   Performance: <0.5ms p50 latency
+```
+
+### Install Optional Packages
+
+Ruvector supports optional packages that extend functionality. Use the `install` command to add them:
+
+```bash
+# List available packages
+npx ruvector install
+
+# Output:
+#   Available Ruvector Packages:
+#
+#     gnn      not installed
+#              Graph Neural Network layers, tensor compression, differentiable search
+#              npm: @ruvector/gnn
+#
+#     core     ✓ installed
+#              Core vector database with native Rust bindings
+#              npm: @ruvector/core
+
+# Install specific package
+npx ruvector install gnn
+
+# Install all optional packages
+npx ruvector install --all
+
+# Interactive selection
+npx ruvector install -i
+```
+
+The install command auto-detects your package manager (npm, yarn, pnpm, bun).
+
+### GNN Commands
+
+Ruvector includes Graph Neural Network (GNN) capabilities for advanced tensor compression and differentiable search.
+
+#### GNN Info
+
+```bash
+# Show GNN module information
+npx ruvector gnn info
+
+# Output:
+#   GNN Module Information
+#     Status:         Available
+#     Platform:       linux
+#     Architecture:   x64
+#
+#   Available Features:
+#     • RuvectorLayer   - GNN layer with multi-head attention
+#     • TensorCompress  - Adaptive tensor compression (5 levels)
+#     • differentiableSearch - Soft attention-based search
+#     • hierarchicalForward  - Multi-layer GNN processing
+```
+
+#### GNN Layer
+
+```bash
+# Create and test a GNN layer
+npx ruvector gnn layer -i 128 -h 256 --test
+
+# Options:
+#   -i, --input-dim   Input dimension (required)
+#   -h, --hidden-dim  Hidden dimension (required)
+#   -a, --heads       Number of attention heads (default: 4)
+#   -d, --dropout     Dropout rate (default: 0.1)
+#   --test            Run a test forward pass
+#   -o, --output      Save layer config to JSON file
+```
+
+#### GNN Compress
+
+```bash
+# Compress embeddings using adaptive tensor compression
+npx ruvector gnn compress -f embeddings.json -l pq8 -o compressed.json
+
+# Options:
+#   -f, --file         Input JSON file with embeddings (required)
+#   -l, --level        Compression level: none|half|pq8|pq4|binary (default: auto)
+#   -a, --access-freq  Access frequency for auto compression (default: 0.5)
+#   -o, --output       Output file for compressed data
+
+# Compression levels:
+#   none   (freq > 0.8)  - Full precision, hot data
+#   half   (freq > 0.4)  - ~50% savings, warm data
+#   pq8    (freq > 0.1)  - ~8x compression, cool data
+#   pq4    (freq > 0.01) - ~16x compression, cold data
+#   binary (freq <= 0.01) - ~32x compression, archive
+```
+
+#### GNN Search
+
+```bash
+# Differentiable search with soft attention
+npx ruvector gnn search -q "[1.0,0.0,0.0]" -c candidates.json -k 5
+
+# Options:
+#   -q, --query        Query vector as JSON array (required)
+#   -c, --candidates   Candidates file - JSON array of vectors (required)
+#   -k, --top-k        Number of results (default: 5)
+#   -t, --temperature  Softmax temperature (default: 1.0)
 ```
 
 ## 📊 Performance Benchmarks

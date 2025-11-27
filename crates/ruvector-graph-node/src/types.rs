@@ -56,6 +56,8 @@ pub struct JsNode {
     pub id: String,
     /// Node embedding
     pub embedding: Float32Array,
+    /// Node labels (e.g., ["Person", "Employee"])
+    pub labels: Option<Vec<String>>,
     /// Optional properties
     pub properties: Option<HashMap<String, String>>,
 }
@@ -114,14 +116,42 @@ pub struct JsHyperedgeResult {
     pub score: f64,
 }
 
+/// Node result from query (without embedding)
+#[napi(object)]
+#[derive(Debug, Clone)]
+pub struct JsNodeResult {
+    /// Node ID
+    pub id: String,
+    /// Node labels
+    pub labels: Vec<String>,
+    /// Node properties
+    pub properties: HashMap<String, String>,
+}
+
+/// Edge result from query
+#[napi(object)]
+#[derive(Debug, Clone)]
+pub struct JsEdgeResult {
+    /// Edge ID
+    pub id: String,
+    /// Source node ID
+    pub from: String,
+    /// Target node ID
+    pub to: String,
+    /// Edge type/label
+    pub edge_type: String,
+    /// Edge properties
+    pub properties: HashMap<String, String>,
+}
+
 /// Query result
 #[napi(object)]
 #[derive(Clone)]
 pub struct JsQueryResult {
     /// Nodes returned by the query
-    pub nodes: Vec<JsNode>,
+    pub nodes: Vec<JsNodeResult>,
     /// Edges returned by the query
-    pub edges: Vec<JsEdge>,
+    pub edges: Vec<JsEdgeResult>,
     /// Optional statistics
     pub stats: Option<JsGraphStats>,
 }
